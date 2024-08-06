@@ -57,7 +57,6 @@ fun DrawingBoard() {
 					.fillMaxSize()
 					.background(Color.White)
 					.graphicsLayer {
-						if (drawMode != DrawMode.Touch) return@graphicsLayer
 						scaleX = scale
 						scaleY = scale
 						translationX = offset.x
@@ -68,10 +67,13 @@ fun DrawingBoard() {
 						if (drawMode == DrawMode.Touch) return@pointerInput
 						detectDragGestures { change, dragAmount ->
 							change.consume()
-
 							val eraseMode = drawMode == DrawMode.Erase
 							val path = PathProperties(
-								color = if (eraseMode) Color.White else Color.Black,
+								color = when (drawMode) {
+									DrawMode.Erase -> Color.White
+									DrawMode.Draw -> Color.Black
+									else -> Color.Transparent
+								},
 								eraseMode = eraseMode,
 								start = change.position - dragAmount,
 								end = change.position,
